@@ -270,5 +270,75 @@ function circle3(){
     const controller = {onMouseMove};
     return {view, model, controller};
 }
+function drawing(){
+
+    function render(state){
+        if (state.addMode){
+            return [{type: "circle", center: state.position, radius: 2, color: "red"}];
+        } else {
+            let foo = [];
+            for (let i = 0; i < state.dots.length; i++) {
+                foo.push({type: "circle", center: state.dots[i], radius: 2, color: "green"});
+            }
+            foo.push({type: "circle", center: state.position, radius: 5, color: "red"});
+            console.log(foo);
+            return foo;
+        }
 
 
+    }
+
+    function moveTo(state, position){
+        if (state.addMode){
+            let foo = [...state.dots, position];
+
+            return {position: position, dots: foo, addMode: true};
+        } else {
+            return {position: position, dots: [], addMode: false};
+        }
+    }
+
+    function setAddMode(state, addMode){
+        return {position: state.position, dots: state.dots, addMode: addMode};
+    }
+
+    function onMouseMove(state, args) {
+        return moveTo(state, args.position);
+    }
+
+    function onMouseDown(state, args){
+        return {position: state.position, dots: state.dots, addMode: true};
+    }
+
+    function onMouseUp(state, args){
+        return {position: state.position, dots: state.dots, addMode: false};
+    }
+    
+    const view = {render};
+    const model = {moveTo, setAddMode};
+    const controller = {onMouseMove, onMouseDown, onMouseUp};
+    return {view, model, controller};
+}
+
+function random(){
+
+    function throwDie(state){
+        let foo = (4578 * state.rng ** 2 - 976161 * state.rng + 6156489) % 79729693;
+        return {rng: (4578 * state.rng ** 2 - 976161 * state.rng + 6156489) % 79729693, dieValue: foo % 6 + 1 };
+    }
+
+    function onKeyDown(state, args){
+        if (args.key === " "){
+            return throwDie(state);
+        }
+    }
+
+    function render(state){
+        return [{type: "text", position: {x: 50, y: 50}, string: state.dieValue.toString() }];
+    }
+
+    const view = {render};
+    const model = {throwDie};
+    const controller = {onKeyDown};
+    return {view, model, controller};
+}
