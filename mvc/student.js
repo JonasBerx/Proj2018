@@ -176,3 +176,45 @@ function chronometer(state, dt){
     const model = { timePassed };
     return { controller, model};
 }
+function chronometer2(){
+
+    function timePassed(state, dt){
+        if (state.active){
+            return { elapsedTime: state.elapsedTime + dt, active: true };
+        } else {
+            return { elapsedTime: state.elapsedTime, active: false };
+        }
+    }
+
+    function toggle(state){
+        return {elapsedTime: state.elapsedTime, active: !state.active};
+    }
+
+    function onTimerTick(state, dt){
+        if (state.active){
+            return { elapsedTime: state.elapsedTime + dt, active: true };
+        } else {
+            return { elapsedTime: state.elapsedTime, active: false };
+        }
+    }
+
+    function onKeyDown(state, dt){
+        if (dt.key === " "){
+            return {elapsedTime: state.elapsedTime, active: !state.active};
+        }
+        if (dt.key === "0"){
+            return {elapsedTime: 0, active: state.active};
+        }
+        return { elapsedTime: state.elapsedTime, active: state.active };
+
+    }
+
+    function reset(state){
+        return { elapsedTime: 0, active: state.active};
+    }
+
+    const controller = {onTimerTick, onKeyDown};
+    const model = { timePassed, toggle, reset };
+    return { controller, model};
+}
+
