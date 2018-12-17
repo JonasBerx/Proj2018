@@ -217,4 +217,58 @@ function chronometer2(){
     const model = { timePassed, toggle, reset };
     return { controller, model};
 }
+function circle(){
+
+    function render(state){
+        return [{type: "circle", center: {x: 100, y: 100}, radius: 10, color: "red"}];
+    }
+
+    const view = {render};
+    const model = {};
+    const controller = {};
+    return {view, model, controller};
+}
+
+function circle2(){
+
+    function render(state){
+        return [{type: "circle", center: state.position, radius: 10, color: "red"}];
+    }
+
+    function moveTo(state, position){
+        return {position: position};
+
+    }
+
+    function onMouseDown(state, args) {
+        return {position: args.position};
+    }
+
+    const view = {render};
+    const model = {moveTo};
+    const controller = {onMouseDown};
+    return {view, model, controller};
+}
+
+function circle3(){
+
+    function render(state){
+        return [{type: "circle", center: state.position, radius: 10, color: "red"}];
+    }
+
+    function moveTo(state, position){
+        return {position: position};
+
+    }
+
+    function onMouseMove(state, args) {
+        return {position: args.position};
+    }
+
+    const view = {render};
+    const model = {moveTo};
+    const controller = {onMouseMove};
+    return {view, model, controller};
+}
+
 
