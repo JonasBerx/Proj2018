@@ -64,6 +64,11 @@ function verticalChainAt(grid, position) {
     return i + j - 1 ;
 }
 
+function removeChains(grid) {
+    
+
+}
+
 
 
 

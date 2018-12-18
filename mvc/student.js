@@ -313,7 +313,7 @@ function drawing(){
     function onMouseUp(state, args){
         return {position: state.position, dots: state.dots, addMode: false};
     }
-    
+
     const view = {render};
     const model = {moveTo, setAddMode};
     const controller = {onMouseMove, onMouseDown, onMouseUp};
@@ -341,4 +341,35 @@ function random(){
     const model = {throwDie};
     const controller = {onKeyDown};
     return {view, model, controller};
+}
+function random2() {
+    const model = (() => {
+        function nextRandom(n) {
+            return (4578 * n ** 2 - 976161 * n + 6156489) % 79729693;
+        }
+        function throwDie(state) {
+            const value = nextRandom(state.rng);
+            return [value % 6 + 1, { ...state, rng: value }];
+        }
+        function generateGrade(state) {
+            const [a, state2] = throwDie(state);
+            const [b, state3] = throwDie(state2);
+            const [c, state4] = throwDie(state3);
+            return { ...state4, grade: a + b + c };
+        }
+        return { nextRandom, throwDie, generateGrade };
+    })();
+    const controller = (() => {
+        function onKeyDown(state, args) {
+            return model.generateGrade(state);
+        }
+        return { onKeyDown };
+    })();
+    const view = (() => {
+        function render(state) {
+            return [{ type: 'text', position: { x: 50, y: 50 }, string: state.grade.toString() }];
+        }
+        return { render };
+    })();
+    return { model, view, controller };
 }
