@@ -24,7 +24,7 @@ function isInside(grid, position) {
 }
 
 function swap(grid,p,q) {
-    const temp = grid[p.y][p.x];
+    let temp = grid[p.y][p.x];
     grid[p.y][p.x] = grid[q.y][q.x];
     grid[q.y][q.x] = temp;
 
@@ -64,11 +64,57 @@ function verticalChainAt(grid, position) {
     return i + j - 1 ;
 }
 
-function removeChains(grid) {
-    
+function removeChains(grid){
+    const result = {};
+    const positions = [];
+    for (let y = 0; y < height(grid); y++){
+        let x = 0;
+        while (x < width(grid)){
+            const n = horizontalChainAt(grid, {x, y});
+            if (n >2){
+                for ( let i = 0; i !== n; i++){
+                    positions.push({x: x + i, y});
+                }
+            }
+            x += n;
+        }
+    }
 
+    for (let x = 0; x < width(grid); x++){
+        let y = 0;
+        while (y < height(grid)){
+            const n = verticalChainAt(grid, {x, y});
+            if (n >2){
+                for ( let i = 0; i !== n; i++){
+                    positions.push({x, y: y + i});
+                }
+            }
+            y += n;
+        }
+    }
+
+    for(const position of positions){
+        const {x,y} = position;
+        const color = grid[y][x];
+        result[color] = (result[color] || 0 ) + 1;;
+    }
+
+    for(const {x,y} of positions){
+        grid[y][x] = "";
+    }
+    return result;
 }
 
-
-
-
+function collapse(grid){
+    for (let y = height(grid) - 1; y > 0; y--){
+        for(let x = 0; x < width(grid); x++){
+            for (let y = height(grid) - 1; y > 0; y--){
+                var q = {x, y};
+                q.y = y-1;
+                if( grid[y][x] == ""){
+                    swap(grid, {x, y}, q);
+                }
+            }
+        }
+    }
+}
