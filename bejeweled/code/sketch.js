@@ -10,10 +10,6 @@ let grid = [...Array(fieldWidth / spacer)].map(e => Array(fieldHeight / spacer))
 let x = 0;
 let y = 0;
 
-//AUDIO
-var themeSong;
-var pewNews;
-
 //IMAGES
 let blueStone;
 let greenStone;
@@ -24,7 +20,19 @@ let yellowStone;
 let selector;
 let darkSlate;
 let lightSlate;
-let background
+let background;
+
+//MOVES
+let moves = 69;
+
+//SCORE
+let score = 0;
+let target = 100000;
+let start = false;
+
+//AUDIO
+let themeSong;
+let pewNews;
 
 function Stone(color, selected, position){
     this.color = color;
@@ -50,9 +58,16 @@ function preload(){
     lightSlate = loadImage("images/lightSlate.png");
     background = loadImage("images/background.png");
 
+    //FONTS
+    font = loadFont('font/8-BITWONDER.TTF');
+
 }
 
 function setup() {
+
+    textFont(font);
+    textSize(15);
+    textAlign(CENTER, CENTER);
 
     createCanvas(canvasWidth, canvasHeight);
 
@@ -65,13 +80,14 @@ function setup() {
 
         }
     }
+
     themeSong = new sound("sounds/theme.mp3");
     pewNews = new sound("sounds/pew.mp3");
     themeSong.play();
     themeSong.volume = 0.2;
 
-    console.log(grid);
 }
+
 function sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
@@ -88,21 +104,6 @@ function sound(src) {
 }
 
 function playGround(){
-
-
-    // //ACHTERGROND
-    // for (var x = 0; x < fieldWidth; x += spacer) {
-    //     for (var y = 0; y < fieldHeight; y += spacer) {
-    //         var rng = int(random(6));
-    //
-    //         if ((x + y) % (spacer*2) !== 0){
-    //             image(darkSlate, x, y, spacer, spacer);
-    //         } else {
-    //             image(lightSlate, x, y, spacer, spacer);
-    //         }
-    //
-    //     }
-    // }
 
     //STONES
     for (let i = 0; i < grid[0].length; i++) {
@@ -207,18 +208,49 @@ function removeChains() {
             let horizontal = horizontalChainAt(i,j);
             let vertical = verticalChainAt(i,j);
 
+            if (start){
+                if (horizontal === 3){
+                    score += 500;
+                    pewNews.play();
+                }
+
+                if (horizontal === 4){
+                    score += 2000;
+                    pewNews.play();
+                }
+
+                if (horizontal === 5){
+                    score += 10000;
+                    pewNews.play();
+                }
+
+                if (vertical === 3){
+                    score += 500;
+                    pewNews.play();
+                }
+
+                if (vertical === 4){
+                    score += 500;
+                    pewNews.play();
+                }
+
+                if (vertical === 5){
+                    score += 500;
+                    pewNews.play();
+                }
+                
+            }
+
             if (horizontal >= 3){
                 for (let k = 0; k < horizontal; k++) {
                     grid[i + k][j].color = 0;
                 }
-                pewNews.play();
             }
 
             if (vertical >= 3){
                 for (let k = 0; k < vertical; k++) {
                     grid[i][j + k].color = 0;
                 }
-                pewNews.play();
             }
         }
     }
@@ -277,16 +309,33 @@ function legalSwap(x, y){
 
 }
 
+function drawWords(){
+    text("MOVES \n" + moves, 235, 50);
+    text("SCORE \n" + score, 500, 50);
+    text("TARGET \n" + target, 790, 50);
+}
+
 function draw() {
 
     image(background, 0, 0, canvasWidth, canvasHeight);
 
+    drawWords();
     removeChains();
     collapse();
     spawn();
     playGround();
 
+    if (score >= target){
+
+    }
+
+    if (moves === 0 && score < target){
+
+    }
+
     if (mouseIsPressed){
+
+        start = true;
 
         let oldX = x;
         let oldY = y;
@@ -316,6 +365,8 @@ function draw() {
                 grid[newX][newY].selected = false;
                 swap(grid[oldX][oldY], grid[newX][newY]);
 
+                moves--;
+
                 let foo = false;
 
                 if (legalSwap(oldX, oldY)){
@@ -328,6 +379,7 @@ function draw() {
 
                 if (!foo){
                     swap(grid[oldX][oldY], grid[newX][newY]);
+                    moves++;
                 }
 
             }else{
