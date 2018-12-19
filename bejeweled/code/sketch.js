@@ -59,14 +59,14 @@ function preload(){
     background = loadImage("images/background.png");
 
     //FONTS
-    font = loadFont('font/8-BITWONDER.TTF');
+    font = loadFont('font/upheavtt.ttf');
 
 }
 
 function setup() {
 
     textFont(font);
-    textSize(15);
+    textSize(20);
     textAlign(CENTER, CENTER);
 
     createCanvas(canvasWidth, canvasHeight);
@@ -238,7 +238,7 @@ function removeChains() {
                     score += 500;
                     pewNews.play();
                 }
-                
+
             }
 
             if (horizontal >= 3){
@@ -310,9 +310,12 @@ function legalSwap(x, y){
 }
 
 function drawWords(){
-    text("MOVES \n" + moves, 235, 50);
-    text("SCORE \n" + score, 500, 50);
-    text("TARGET \n" + target, 790, 50);
+    text("MOVES", 235, 40);
+    text(moves, 235, 60);
+    text("SCORE", 500, 40);
+    text(score, 500, 60);
+    text("TARGET", 790, 40);
+    text(target, 790, 60)
 }
 
 function draw() {
