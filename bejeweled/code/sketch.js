@@ -27,12 +27,16 @@ let moves = 69;
 
 //SCORE
 let score = 0;
-let target = 100000;
+let target = 10000;
 let start = false;
 
 //AUDIO
 let themeSong;
-let pewNews;
+let chain4PrettyGood;
+let chain5PewPew;
+let epicVictoryRoyal;
+let victory = true;
+
 
 function Stone(color, selected, position){
     this.color = color;
@@ -82,7 +86,9 @@ function setup() {
     }
 
     themeSong = new sound("sounds/theme.mp3");
-    pewNews = new sound("sounds/pew.mp3");
+    chain4PrettyGood = new sound("sounds/chain4PrettyGood.mp3");
+    chain5PewPew = new sound("sounds/chain5Pew.mp3");
+    epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
     themeSong.play();
     themeSong.volume = 0.2;
 
@@ -211,32 +217,32 @@ function removeChains() {
             if (start){
                 if (horizontal === 3){
                     score += 500;
-                    pewNews.play();
+
                 }
 
                 if (horizontal === 4){
                     score += 2000;
-                    pewNews.play();
+                    chain4PrettyGood.play();
                 }
 
                 if (horizontal === 5){
                     score += 10000;
-                    pewNews.play();
+                    chain5PewPew.play();
                 }
 
                 if (vertical === 3){
                     score += 500;
-                    pewNews.play();
+
                 }
 
                 if (vertical === 4){
                     score += 500;
-                    pewNews.play();
+                    chain4PrettyGood.play();
                 }
 
                 if (vertical === 5){
                     score += 500;
-                    pewNews.play();
+                    chain5PewPew.play();
                 }
 
             }
@@ -328,8 +334,10 @@ function draw() {
     spawn();
     playGround();
 
-    if (score >= target){
-
+    if (score >= target && victory){
+        themeSong.stop();
+        epicVictoryRoyal.play();
+        victory = false;
     }
 
     if (moves === 0 && score < target){
