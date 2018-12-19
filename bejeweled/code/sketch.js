@@ -211,29 +211,32 @@ function spawn(){
 
 function legalSwap(x, y){
 
+    console.log(x,y);
+
+
     let legalMove = false;
 
-    if (x >= 8 && horizontalChainAt(x, y) >= 3){
+    if (x < 8 && horizontalChainAt(x, y) >= 3){
         legalMove = true;
     }
 
-    if (x !== 0 && horizontalChainAt(x - 1, y) >= 3){
+    if (x >= 1 && x < 9 &&horizontalChainAt(x - 1, y) >= 3){
         legalMove = true;
     }
 
-    if (x <= 1 && horizontalChainAt(x - 2, y) >= 3){
+    if (x >= 2 && horizontalChainAt(x - 2, y) >= 3){
         legalMove = true;
     }
 
-    if (y !== 0 && verticalChainAt(x, y) >= 3){
+    if (y < 8 && verticalChainAt(x, y) >= 3){
         legalMove = true;
     }
 
-    if (y !== 0 && verticalChainAt(x, y -1) >= 3){
+    if (y >= 1 && y < 9 &&verticalChainAt(x, y -1) >= 3){
         legalMove = true;
     }
 
-    if (y <= 1 && verticalChainAt(x, y -2) >= 3){
+    if (y >= 2 && verticalChainAt(x, y -2) >= 3){
         legalMove = true;
     }
 
@@ -277,6 +280,24 @@ function draw() {
                 grid[oldX][oldY].selected = false;
                 grid[newX][newY].selected = false;
                 swap(grid[oldX][oldY], grid[newX][newY]);
+
+
+
+                let foo = false;
+
+                console.log(legalSwap(oldX, oldY));
+                if (legalSwap(oldX, oldY)){
+                    foo = true;
+                }
+
+                console.log(legalSwap(newX, newY));
+                if (legalSwap(newX, newY)){
+                    foo = true;
+                }
+
+                if (!foo){
+                    swap(grid[oldX][oldY], grid[newX][newY]);
+                }
 
             }else{
                 grid[oldX][oldY].selected = false;
