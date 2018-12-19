@@ -1,10 +1,25 @@
-const width = 500;
-const height = 500;
+const canvasWidth = 1000;
+const canvasHeight = 700;
+const fieldWidth = 500;
+const fieldHeight = 500;
+const paddingTop = 100;
+const paddingLeft = 250;
 const spacer = 50;
-let grid = [...Array(width / spacer)].map(e => Array(height / spacer));
+let grid = [...Array(fieldWidth / spacer)].map(e => Array(fieldHeight / spacer));
 
 let x = 0;
 let y = 0;
+
+//IMAGES
+let blueStone;
+let greenStone;
+let orangeStone;
+let purpleStone;
+let redStone;
+let yellowStone;
+let selector;
+let darkSlate;
+let lightSlate;
 
 function Stone(color, selected, position){
     this.color = color;
@@ -17,16 +32,30 @@ function Position(x, y){
     this.y = y;
 }
 
+function preload(){
+    //SET IMAGES
+    blueStone = loadImage("images/blueStone.png");
+    greenStone = loadImage("images/greenStone.png");
+    orangeStone = loadImage("images/orangeStone.png");
+    purpleStone = loadImage("images/purpleStone.png");
+    redStone = loadImage("images/redStone.png");
+    yellowStone = loadImage("images/yellowStone.png");
+    selector = loadImage("images/selector.png");
+    darkSlate = loadImage("images/darkSlate.png");
+    lightSlate = loadImage("images/lightSlate.png");
+
+}
+
 function setup() {
 
-    createCanvas(width, height);
+    createCanvas(canvasWidth, canvasHeight);
 
-    for (let i = 0; i < width / spacer; i++) {
-        for (let j = 0; j < height / spacer; j++) {
+    for (let i = 0; i < fieldWidth / spacer; i++) {
+        for (let j = 0; j < fieldHeight / spacer; j++) {
 
             let rng = int(random(6) + 1);
 
-            grid[i][j] = new Stone(rng, false, new Position(i * spacer, j * spacer));
+            grid[i][j] = new Stone(rng, false, new Position(i * spacer + paddingLeft, j * spacer + paddingTop));
 
         }
     }
@@ -37,72 +66,71 @@ function setup() {
 function playGround(){
 
 
-    //ACHTERGROND
-    for (var x = 0; x < width; x += spacer) {
-        for (var y = 0; y < height; y += spacer) {
-            var rng = int(random(6));
-
-            if ((x + y) % (spacer*2) !== 0){
-                stroke(200);
-                fill(200);
-            } else {
-                stroke(225);
-                fill(225);
-            }
-
-            rect(x, y, spacer, spacer);
-
-        }
-    }
+    // //ACHTERGROND
+    // for (var x = 0; x < fieldWidth; x += spacer) {
+    //     for (var y = 0; y < fieldHeight; y += spacer) {
+    //         var rng = int(random(6));
+    //
+    //         if ((x + y) % (spacer*2) !== 0){
+    //             image(darkSlate, x, y, spacer, spacer);
+    //         } else {
+    //             image(lightSlate, x, y, spacer, spacer);
+    //         }
+    //
+    //     }
+    // }
 
     //STONES
     for (let i = 0; i < grid[0].length; i++) {
         for (let j = 0; j < grid.length; j++) {
 
-            if (grid[i][j].selected){
-                stroke(0);
-                fill(255,0,0);
-                rect(grid[i][j].position.x, grid[i][j].position.y + 10, 3, 30);
-                rect(grid[i][j].position.x + 10, grid[i][j].position.y, 30, 3);
-                rect(grid[i][j].position.x + 46, grid[i][j].position.y + 10, 3, 30);
-                rect(grid[i][j].position.x + 10, grid[i][j].position.y + 46, 30, 3);
+            if ((i + j) % 2 !== 0){
+                image(darkSlate, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
+            } else {
+                image(lightSlate, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
             }
+
+            if (grid[i][j].selected){
+                image(selector, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
+            }
+
+            let stone;
 
             if (!(grid[i][j].color === 0)){
                 switch(grid[i][j].color){
                     case 1:
                         //BLAUW
-                        fill(38, 110, 246);
+                        stone = blueStone;
                         break;
 
                     case 2:
                         //GEEL
-                        fill(255, 211, 0);
+                        stone = yellowStone;
                         break;
 
                     case 3:
                         //ROOD
-                        fill(255, 1, 48);
+                        stone = redStone;
                         break;
 
                     case 4:
                         //PAARS
-                        fill(228, 41, 242);
+                        stone = purpleStone;
                         break;
 
                     case 5:
                         //GROEN
-                        fill(18, 231, 114);
+                        stone = greenStone;
                         break;
 
                     case 6:
                         //ORANJE
-                        fill(255, 139, 0);
+                        stone = orangeStone;
                         break;
                 }
 
-                stroke(0);
-                ellipse(grid[i][j].position.x + spacer/2, grid[i][j].position.y + spacer/2, 35, 35);
+                image(stone, grid[i][j].position.x + 13, grid[i][j].position.y + 8, 25, 35);
+
             }
         }
     }
@@ -111,13 +139,11 @@ function playGround(){
 
 function swap(p, q){
 
-    const temp = grid[p.position.x / spacer][p.position.y / spacer].color;
+    const temp = grid[(p.position.x - paddingLeft) / spacer][(p.position.y - paddingTop) / spacer].color;
 
-    grid[p.position.x / spacer][p.position.y / spacer].color = grid[q.position.x / spacer][q.position.y / spacer].color;
+    grid[(p.position.x - paddingLeft) / spacer][(p.position.y - paddingTop) / spacer].color = grid[(q.position.x - paddingLeft)/ spacer][(q.position.y - paddingTop) / spacer].color;
 
-    grid[q.position.x / spacer][q.position.y / spacer].color = temp;
-
-
+    grid[(q.position.x - paddingLeft) / spacer][(q.position.y - paddingTop) / spacer].color = temp;
 
 }
 
@@ -193,7 +219,41 @@ function spawn(){
     }
 }
 
+function legalSwap(x, y){
+
+    let legalMove = false;
+
+    if (x < 8 && horizontalChainAt(x, y) >= 3){
+        legalMove = true;
+    }
+
+    if (x >= 1 && x < 9 &&horizontalChainAt(x - 1, y) >= 3){
+        legalMove = true;
+    }
+
+    if (x >= 2 && horizontalChainAt(x - 2, y) >= 3){
+        legalMove = true;
+    }
+
+    if (y < 8 && verticalChainAt(x, y) >= 3){
+        legalMove = true;
+    }
+
+    if (y >= 1 && y < 9 &&verticalChainAt(x, y -1) >= 3){
+        legalMove = true;
+    }
+
+    if (y >= 2 && verticalChainAt(x, y -2) >= 3){
+        legalMove = true;
+    }
+
+    return legalMove;
+
+}
+
 function draw() {
+
+    background("red");
 
     removeChains();
     collapse();
@@ -205,12 +265,12 @@ function draw() {
         let oldX = x;
         let oldY = y;
 
-        if (int(mouseX /spacer) < 10 && int(mouseY /spacer) < 10){
+        if (int((mouseX - paddingLeft) / spacer) < 10 && int((mouseY - paddingTop) / spacer) < 10){
 
             let foo = false;
 
-            let newX = int(mouseX /spacer);
-            let newY = int(mouseY /spacer);
+            let newX = int((mouseX - paddingLeft) / spacer);
+            let newY = int((mouseY - paddingTop) / spacer);
 
             if (newX !== 9 && grid[newX + 1][newY].selected === true){
                 foo = true;
@@ -229,6 +289,21 @@ function draw() {
                 grid[oldX][oldY].selected = false;
                 grid[newX][newY].selected = false;
                 swap(grid[oldX][oldY], grid[newX][newY]);
+
+                let foo = false;
+
+                if (legalSwap(oldX, oldY)){
+                    foo = true;
+                }
+
+                if (legalSwap(newX, newY)){
+                    foo = true;
+                }
+
+                if (!foo){
+                    swap(grid[oldX][oldY], grid[newX][newY]);
+                }
+
             }else{
                 grid[oldX][oldY].selected = false;
                 grid[newX][newY].selected = true;
