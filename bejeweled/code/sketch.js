@@ -211,9 +211,6 @@ function spawn(){
 
 function legalSwap(x, y){
 
-    console.log(x,y);
-
-
     let legalMove = false;
 
     if (x < 8 && horizontalChainAt(x, y) >= 3){
@@ -281,16 +278,12 @@ function draw() {
                 grid[newX][newY].selected = false;
                 swap(grid[oldX][oldY], grid[newX][newY]);
 
-
-
                 let foo = false;
 
-                console.log(legalSwap(oldX, oldY));
                 if (legalSwap(oldX, oldY)){
                     foo = true;
                 }
 
-                console.log(legalSwap(newX, newY));
                 if (legalSwap(newX, newY)){
                     foo = true;
                 }
