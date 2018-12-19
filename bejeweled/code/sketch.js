@@ -23,11 +23,11 @@ let lightSlate;
 let background;
 
 //MOVES
-let moves = 69;
+let moves = 2;
 
 //SCORE
 let score = 0;
-let target = 10000;
+let target = 20000;
 let start = false;
 
 //AUDIO
@@ -36,7 +36,8 @@ let chain4PrettyGood;
 let chain5PewPew;
 let epicVictoryRoyal;
 let victory = true;
-
+//VIDEO
+let failure = true;
 
 function Stone(color, selected, position){
     this.color = color;
@@ -72,7 +73,6 @@ function setup() {
     textFont(font);
     textSize(20);
     textAlign(CENTER, CENTER);
-
     createCanvas(canvasWidth, canvasHeight);
 
     for (let i = 0; i < fieldWidth / spacer; i++) {
@@ -89,6 +89,7 @@ function setup() {
     chain4PrettyGood = new sound("sounds/chain4PrettyGood.mp3");
     chain5PewPew = new sound("sounds/chain5Pew.mp3");
     epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
+
     themeSong.play();
     themeSong.volume = 0.2;
 
@@ -107,6 +108,19 @@ function sound(src) {
     this.stop = function(){
         this.sound.pause();
     };
+}
+function video() {
+    var x = document.createElement("VIDEO");
+
+    x.setAttribute("src","videos/youDied2.mp4");
+
+    x.setAttribute("width", "1000px");
+    x.setAttribute("height", "1000px");
+
+    x.setAttribute("autoplay", "autoplay");
+    document.body.appendChild(x);
+
+    x.webkitEnterFullScreen();
 }
 
 function playGround(){
@@ -338,10 +352,16 @@ function draw() {
         themeSong.stop();
         epicVictoryRoyal.play();
         victory = false;
+        noLoop();
     }
 
-    if (moves === 0 && score < target){
-
+    if (moves === 0 && score < target && failure) {
+        themeSong.stop();
+        collapse();
+        spawn();
+        video();
+        failure = false;
+        noLoop();
     }
 
     if (mouseIsPressed){
