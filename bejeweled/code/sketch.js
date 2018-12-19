@@ -1,7 +1,11 @@
-const width = 500;
-const height = 500;
+const canvasWidth = 1000;
+const canvasHeight = 700;
+const fieldWidth = 500;
+const fieldHeight = 500;
+const paddingTop = 100;
+const paddingLeft = 250;
 const spacer = 50;
-let grid = [...Array(width / spacer)].map(e => Array(height / spacer));
+let grid = [...Array(fieldWidth / spacer)].map(e => Array(fieldHeight / spacer));
 
 let x = 0;
 let y = 0;
@@ -16,6 +20,7 @@ let yellowStone;
 let selector;
 let darkSlate;
 let lightSlate;
+let background
 
 function Stone(color, selected, position){
     this.color = color;
@@ -39,19 +44,20 @@ function preload(){
     selector = loadImage("images/selector.png");
     darkSlate = loadImage("images/darkSlate.png");
     lightSlate = loadImage("images/lightSlate.png");
+    background = loadImage("images/background.png");
 
 }
 
 function setup() {
 
-    createCanvas(width, height);
+    createCanvas(canvasWidth, canvasHeight);
 
-    for (let i = 0; i < width / spacer; i++) {
-        for (let j = 0; j < height / spacer; j++) {
+    for (let i = 0; i < fieldWidth / spacer; i++) {
+        for (let j = 0; j < fieldHeight / spacer; j++) {
 
             let rng = int(random(6) + 1);
 
-            grid[i][j] = new Stone(rng, false, new Position(i * spacer, j * spacer));
+            grid[i][j] = new Stone(rng, false, new Position(i * spacer + paddingLeft, j * spacer + paddingTop));
 
         }
     }
@@ -62,23 +68,29 @@ function setup() {
 function playGround(){
 
 
-    //ACHTERGROND
-    for (var x = 0; x < width; x += spacer) {
-        for (var y = 0; y < height; y += spacer) {
-            var rng = int(random(6));
-
-            if ((x + y) % (spacer*2) !== 0){
-                image(darkSlate, x, y, spacer, spacer);
-            } else {
-                image(lightSlate, x, y, spacer, spacer);
-            }
-
-        }
-    }
+    // //ACHTERGROND
+    // for (var x = 0; x < fieldWidth; x += spacer) {
+    //     for (var y = 0; y < fieldHeight; y += spacer) {
+    //         var rng = int(random(6));
+    //
+    //         if ((x + y) % (spacer*2) !== 0){
+    //             image(darkSlate, x, y, spacer, spacer);
+    //         } else {
+    //             image(lightSlate, x, y, spacer, spacer);
+    //         }
+    //
+    //     }
+    // }
 
     //STONES
     for (let i = 0; i < grid[0].length; i++) {
         for (let j = 0; j < grid.length; j++) {
+
+            if ((i + j) % 2 !== 0){
+                image(darkSlate, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
+            } else {
+                image(lightSlate, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
+            }
 
             if (grid[i][j].selected){
                 image(selector, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
@@ -129,11 +141,11 @@ function playGround(){
 
 function swap(p, q){
 
-    const temp = grid[p.position.x / spacer][p.position.y / spacer].color;
+    const temp = grid[(p.position.x - paddingLeft) / spacer][(p.position.y - paddingTop) / spacer].color;
 
-    grid[p.position.x / spacer][p.position.y / spacer].color = grid[q.position.x / spacer][q.position.y / spacer].color;
+    grid[(p.position.x - paddingLeft) / spacer][(p.position.y - paddingTop) / spacer].color = grid[(q.position.x - paddingLeft)/ spacer][(q.position.y - paddingTop) / spacer].color;
 
-    grid[q.position.x / spacer][q.position.y / spacer].color = temp;
+    grid[(q.position.x - paddingLeft) / spacer][(q.position.y - paddingTop) / spacer].color = temp;
 
 }
 
@@ -243,6 +255,8 @@ function legalSwap(x, y){
 
 function draw() {
 
+    image(background, 0, 0, canvasWidth, canvasHeight);
+
     removeChains();
     collapse();
     spawn();
@@ -253,12 +267,12 @@ function draw() {
         let oldX = x;
         let oldY = y;
 
-        if (int(mouseX /spacer) < 10 && int(mouseY /spacer) < 10){
+        if (int((mouseX - paddingLeft) / spacer) < 10 && int((mouseY - paddingTop) / spacer) < 10){
 
             let foo = false;
 
-            let newX = int(mouseX /spacer);
-            let newY = int(mouseY /spacer);
+            let newX = int((mouseX - paddingLeft) / spacer);
+            let newY = int((mouseY - paddingTop) / spacer);
 
             if (newX !== 9 && grid[newX + 1][newY].selected === true){
                 foo = true;
