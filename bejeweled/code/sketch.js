@@ -7,7 +7,6 @@ const paddingLeft = 250;
 const spacer = 50;
 let grid = [...Array(fieldWidth / spacer)].map(e => Array(fieldHeight / spacer));
 
-
 let x = 0;
 let y = 0;
 
@@ -91,7 +90,6 @@ function setup() {
     textFont(font);
     textSize(20);
     textAlign(CENTER, CENTER);
-
     createCanvas(canvasWidth, canvasHeight);
 
     for (let i = 0; i < fieldWidth / spacer; i++) {
@@ -104,12 +102,23 @@ function setup() {
         }
     }
 
-    themeSong = new sound("sounds/theme.mp3");
+    let i = 1;
+    document.getElementById('audio').addEventListener('ended', function(){
+        if (i === 4) {
+            i = 0;
+        }
+        i++;
+        nextSong = "sounds/"+i+".mp3";
+        audioPlayer = document.getElementById('audio');
+        audioPlayer.src = nextSong;
+        audioPLayer.load();
+        audioPlayer.play();
+
+    }, false);
+
+    epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
     chain4PrettyGood = new sound("sounds/chain4PrettyGood.mp3");
     chain5PewPew = new sound("sounds/chain5Pew.mp3");
-    epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
-    themeSong.play();
-    themeSong.volume = 0.2;
 
 }
 
@@ -122,9 +131,6 @@ function sound(src) {
     document.body.appendChild(this.sound);
     this.play = function(){
         this.sound.play();
-    };
-    this.stop = function(){
-        this.sound.pause();
     };
 }
 
@@ -302,7 +308,7 @@ function removeChains() {
 
                     if (horizontal === 5){
                         score += 10000;
-                        chain5PewPew.play();
+                        chain5Pew.play();
                     }
 
                     if (vertical === 3){
@@ -317,7 +323,7 @@ function removeChains() {
 
                     if (vertical === 5){
                         score += 500;
-                        chain5PewPew.play();
+                        chain5Pew.play();
                     }
 
                 }
@@ -518,13 +524,17 @@ function draw() {
     playGround();
 
     if (score >= target && victory){
-        themeSong.stop();
+        audio.pause();
         epicVictoryRoyal.play();
+        collapse();
+        spawn();
+        score = 20000;
         victory = false;
+        noLoop();
     }
 
     if (moves === 0 && score < target && failure) {
-        themeSong.stop();
+        audio.pause();
         collapse();
         spawn();
         video();
