@@ -7,6 +7,7 @@ const paddingLeft = 250;
 const spacer = 50;
 let grid = [...Array(fieldWidth / spacer)].map(e => Array(fieldHeight / spacer));
 
+
 let x = 0;
 let y = 0;
 
@@ -23,11 +24,11 @@ let lightSlate;
 let background;
 
 //MOVES
-let moves = 2;
+let moves = 20;
 
 //SCORE
 let score = 0;
-let target = 20000;
+let target = 10000;
 let start = false;
 
 //AUDIO
@@ -36,13 +37,16 @@ let chain4PrettyGood;
 let chain5PewPew;
 let epicVictoryRoyal;
 let victory = true;
+
 //VIDEO
 let failure = true;
 
-function Stone(color, selected, position){
+
+function Stone(color, position){
     this.color = color;
-    this.selected = selected;
+    this.selected = false;
     this.position = position;
+    this.delete = false;
 }
 
 function Position(x, y){
@@ -68,11 +72,26 @@ function preload(){
 
 }
 
+function video() {
+    var x = document.createElement("VIDEO");
+
+    x.setAttribute("src","videos/youDied2.mp4");
+
+    x.setAttribute("width", "1000px");
+    x.setAttribute("height", "1000px");
+
+    x.setAttribute("autoplay", "autoplay");
+    document.body.appendChild(x);
+
+    x.webkitEnterFullScreen();
+}
+
 function setup() {
 
     textFont(font);
     textSize(20);
     textAlign(CENTER, CENTER);
+
     createCanvas(canvasWidth, canvasHeight);
 
     for (let i = 0; i < fieldWidth / spacer; i++) {
@@ -80,7 +99,7 @@ function setup() {
 
             let rng = int(random(6) + 1);
 
-            grid[i][j] = new Stone(rng, false, new Position(i * spacer + paddingLeft, j * spacer + paddingTop));
+            grid[i][j] = new Stone(rng, new Position(i * spacer + paddingLeft, j * spacer + paddingTop));
 
         }
     }
@@ -89,7 +108,6 @@ function setup() {
     chain4PrettyGood = new sound("sounds/chain4PrettyGood.mp3");
     chain5PewPew = new sound("sounds/chain5Pew.mp3");
     epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
-
     themeSong.play();
     themeSong.volume = 0.2;
 
@@ -109,26 +127,14 @@ function sound(src) {
         this.sound.pause();
     };
 }
-function video() {
-    var x = document.createElement("VIDEO");
-
-    x.setAttribute("src","videos/youDied2.mp4");
-
-    x.setAttribute("width", "1000px");
-    x.setAttribute("height", "1000px");
-
-    x.setAttribute("autoplay", "autoplay");
-    document.body.appendChild(x);
-
-    x.webkitEnterFullScreen();
-}
 
 function playGround(){
 
-    //STONES
     for (let i = 0; i < grid[0].length; i++) {
         for (let j = 0; j < grid.length; j++) {
 
+
+            //SLATES
             if ((i + j) % 2 !== 0){
                 image(darkSlate, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
             } else {
@@ -139,6 +145,13 @@ function playGround(){
                 image(selector, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
             }
 
+            //DELETE DELETE STONE
+            if (grid[i][j].delete){
+                grid[i][j].color = 0;
+                grid[i][j].delete = false;
+            }
+
+            //COLOR STONES
             let stone;
 
             if (!(grid[i][j].color === 0)){
@@ -174,6 +187,7 @@ function playGround(){
                         break;
                 }
 
+                //DRAW STONES
                 image(stone, grid[i][j].position.x + 13, grid[i][j].position.y + 8, 25, 35);
 
             }
@@ -220,56 +234,87 @@ function verticalChainAt(x, y) {
 
 }
 
+function removeHorizontal(x){
+    for (let i = 0; i < grid[0].length; i++) {
+        grid[i][x].delete = true;
+    }
+}
+
 function removeChains() {
 
     for (let i = 0; i < grid[0].length; i++) {
         for (let j = 0; j < grid.length; j++) {
 
-            let horizontal = horizontalChainAt(i,j);
-            let vertical = verticalChainAt(i,j);
+            if (grid[i][j].color !== 0){
+                let horizontal = horizontalChainAt(i,j);
+                let vertical = verticalChainAt(i,j);
 
-            if (start){
                 if (horizontal === 3){
-                    score += 500;
-
+                    for (let k = 0; k < horizontal; k++) {
+                        grid[i + k][j].delete = true;
+                    }
                 }
 
                 if (horizontal === 4){
-                    score += 2000;
-                    chain4PrettyGood.play();
+                    for (let k = 0; k < horizontal; k++) {
+                        grid[i + k][j].delete = true;
+                    }
                 }
 
                 if (horizontal === 5){
-                    score += 10000;
-                    chain5PewPew.play();
+                    for (let k = 0; k < horizontal; k++) {
+                        grid[i + k][j].delete = true;
+                    }
                 }
 
                 if (vertical === 3){
-                    score += 500;
-
+                    for (let k = 0; k < vertical; k++) {
+                        grid[i][j + k].delete = true;
+                    }
                 }
 
                 if (vertical === 4){
-                    score += 500;
-                    chain4PrettyGood.play();
+                    for (let k = 0; k < vertical; k++) {
+                        grid[i][j + k].delete = true;
+                    }
                 }
 
                 if (vertical === 5){
-                    score += 500;
-                    chain5PewPew.play();
+                    for (let k = 0; k < vertical; k++) {
+                        grid[i][j + k].delete = true;
+                    }
                 }
 
-            }
+                if (start){
+                    if (horizontal === 3){
+                        score += 500;
+                    }
 
-            if (horizontal >= 3){
-                for (let k = 0; k < horizontal; k++) {
-                    grid[i + k][j].color = 0;
-                }
-            }
+                    if (horizontal === 4){
+                        score += 2000;
+                        chain4PrettyGood.play();
+                    }
 
-            if (vertical >= 3){
-                for (let k = 0; k < vertical; k++) {
-                    grid[i][j + k].color = 0;
+                    if (horizontal === 5){
+                        score += 10000;
+                        chain5PewPew.play();
+                    }
+
+                    if (vertical === 3){
+                        score += 500;
+
+                    }
+
+                    if (vertical === 4){
+                        score += 500;
+                        chain4PrettyGood.play();
+                    }
+
+                    if (vertical === 5){
+                        score += 500;
+                        chain5PewPew.play();
+                    }
+
                 }
             }
         }
@@ -291,7 +336,7 @@ function collapse(){
 
 function spawn(){
     for (let i = 0; i <= grid[0].length - 1; i++) {
-        if (grid[i][0].color === 0){
+        if (grid[i][0].color === 0 && grid[i][0].delete === false){
             grid[i][0].color = int(random(6) + 1);
         }
     }
@@ -352,7 +397,6 @@ function draw() {
         themeSong.stop();
         epicVictoryRoyal.play();
         victory = false;
-        noLoop();
     }
 
     if (moves === 0 && score < target && failure) {
@@ -422,8 +466,5 @@ function draw() {
             y = newY;
 
         }
-
     }
-
-
 }
