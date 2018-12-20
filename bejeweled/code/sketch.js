@@ -24,7 +24,7 @@ let lightSlate;
 let background;
 
 //MOVES
-let moves = 20;
+let moves = 50;
 
 //SCORE
 let score = 0;
@@ -152,48 +152,53 @@ function playGround(){
             }
 
             //COLOR STONES
-            let stone;
-
-            if (!(grid[i][j].color === 0)){
-                switch(grid[i][j].color){
-                    case 1:
-                        //BLAUW
-                        stone = blueStone;
-                        break;
-
-                    case 2:
-                        //GEEL
-                        stone = yellowStone;
-                        break;
-
-                    case 3:
-                        //ROOD
-                        stone = redStone;
-                        break;
-
-                    case 4:
-                        //PAARS
-                        stone = purpleStone;
-                        break;
-
-                    case 5:
-                        //GROEN
-                        stone = greenStone;
-                        break;
-
-                    case 6:
-                        //ORANJE
-                        stone = orangeStone;
-                        break;
-                }
-
-                //DRAW STONES
-                image(stone, grid[i][j].position.x + 13, grid[i][j].position.y + 8, 25, 35);
-
-            }
+            drawStone(i, j, grid[i][j].position.x , grid[i][j].position.y);
         }
     }
 
+}
+
+function drawStone(i, j, coordX, coordY ){
+    let stone;
+
+    if (!(grid[i][j].color === 0)){
+        switch(grid[i][j].color){
+            case 1:
+                //BLAUW
+                stone = blueStone;
+                break;
+
+            case 2:
+                //GEEL
+                stone = yellowStone;
+                break;
+
+            case 3:
+                //ROOD
+                stone = redStone;
+                break;
+
+            case 4:
+                //PAARS
+                stone = purpleStone;
+                break;
+
+            case 5:
+                //GROEN
+                stone = greenStone;
+                break;
+
+            case 6:
+                //ORANJE
+                stone = orangeStone;
+                break;
+        }
+
+        //DRAW STONES
+        image(stone, coordX + 13, coordY + 8, 25, 35);
+
+
+    }
 }
 
 function swap(p, q){
@@ -329,7 +334,6 @@ function collapse(){
             if (j !== 0 && grid[i][j].color === 0){
                 swap(grid[i][j], grid[i][j - 1]);
             }
-
         }
     }
 }
@@ -381,6 +385,126 @@ function drawWords(){
     text(score, 500, 60);
     text("TARGET", 790, 40);
     text(target, 790, 60)
+}
+
+function setIntervalX(callback, delay, repetitions) {
+    var x = 0;
+    var intervalID = setInterval(function () {
+
+        callback();
+
+        if (++x === repetitions) {
+            clearInterval(intervalID);
+            loop();
+        }
+    }, delay);
+
+}
+
+function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
+
+    let shiftTop;
+    let shiftBottom;
+    let shiftLeft;
+    let shiftRight;
+
+    let coordX = new Position(gridX.position.x, gridX.position.y);
+    let coordY = new Position(gridY.position.x, gridY.position.y);
+
+    let colorX = gridX.color;
+    let colorY = gridY.color;
+
+    if (gridX.position.x > gridY.position.x){
+        console.log("left");
+        shiftLeft = true;
+    }
+    else if(gridX.position.x < gridY.position.x){
+        console.log("right");
+        shiftRight = true;
+    }
+    else{
+        if (gridX.position.y > gridY.position.y){
+            console.log("top");
+            shiftTop = true;
+        }
+        else{
+            console.log("bottom");
+            shiftBottom = true;
+        }
+    }
+
+    if (shiftLeft){
+
+        noLoop();
+
+        setIntervalX(function () {
+            gridX.color = 0;
+            gridY.color = 0;
+            playGround();
+
+            gridX.color = colorX;
+            gridY.color = colorY;
+            drawStone(coordXx, coordXy, coordX.x--, coordX.y);
+            drawStone(coordYx, coordYy,coordY.x++, coordY.y);
+
+        }, 5, 50);
+
+    }
+
+    if (shiftRight){
+
+        noLoop();
+
+        setIntervalX(function () {
+            gridX.color = 0;
+            gridY.color = 0;
+            playGround();
+
+            gridX.color = colorX;
+            gridY.color = colorY;
+            drawStone(coordXx, coordXy, coordX.x++, coordX.y);
+            drawStone(coordYx, coordYy,coordY.x--, coordY.y);
+
+        }, 5, 50);
+
+    }
+
+    if (shiftTop){
+
+        noLoop();
+
+        setIntervalX(function () {
+            gridX.color = 0;
+            gridY.color = 0;
+            playGround();
+
+            gridX.color = colorX;
+            gridY.color = colorY;
+            drawStone(coordYx, coordYy, coordX.x, coordX.y--);
+            drawStone(coordXx, coordXy,coordY.x, coordY.y++);
+
+        }, 5, 50);
+
+    }
+
+    if (shiftBottom){
+
+        noLoop();
+
+        setIntervalX(function () {
+            gridX.color = 0;
+            gridY.color = 0;
+            playGround();
+
+            gridX.color = colorX;
+            gridY.color = colorY;
+            drawStone(coordYx, coordYy, coordX.x, coordX.y++);
+            drawStone(coordXx, coordXy,coordY.x, coordY.y--);
+
+        }, 5, 50);
+
+    }
+
 }
 
 function draw() {
@@ -439,6 +563,7 @@ function draw() {
                 grid[oldX][oldY].selected = false;
                 grid[newX][newY].selected = false;
                 swap(grid[oldX][oldY], grid[newX][newY]);
+                animation(grid[oldX][oldY], oldX, oldY,grid[newX][newY], newX, newY);
 
                 moves--;
 
