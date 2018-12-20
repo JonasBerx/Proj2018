@@ -31,7 +31,7 @@ let target = 10000;
 let start = false;
 
 //AUDIO
-let themeSong;
+
 let chain4PrettyGood;
 let chain5Pew;
 let epicVictoryRoyal;
@@ -85,6 +85,30 @@ function video() {
 
     x.webkitEnterFullScreen();
 }
+function gif2() {
+    let y = document.createElement("IMG");
+    y.setAttribute("src", "videos/thanosclear.gif");
+    y.setAttribute("width", "304");
+    y.setAttribute("height", "228");
+    y.setAttribute("alt", "thanosmeme");
+    y.setAttribute("class", "thanos2");
+    document.body.appendChild(y);
+}
+function gif() {
+    let x = document.createElement("IMG");
+
+    x.setAttribute("src", "videos/thanosclear.gif");
+
+    x.setAttribute("width", "304");
+    x.setAttribute("height", "228");
+
+    x.setAttribute("alt", "thanosmeme1");
+    x.setAttribute("class", "thanos1");
+
+    document.body.appendChild(x);
+
+}
+
 
 function setup() {
 
@@ -529,6 +553,8 @@ function draw() {
     }
 
     if (score >= target && victory){
+        gif();
+        gif2();
         audio.pause();
         epicVictoryRoyal.play();
         collapse();
