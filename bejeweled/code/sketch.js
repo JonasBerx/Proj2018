@@ -23,7 +23,7 @@ let lightSlate;
 let background;
 
 //MOVES
-let moves = 50;
+let moves = 2000;
 
 //SCORE
 let score = 0;
@@ -33,12 +33,13 @@ let start = false;
 //AUDIO
 let themeSong;
 let chain4PrettyGood;
-let chain5PewPew;
+let chain5Pew;
 let epicVictoryRoyal;
 let victory = true;
 
 //VIDEO
 let failure = true;
+let endGame = false;
 
 
 function Stone(color, position){
@@ -118,7 +119,7 @@ function setup() {
 
     epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
     chain4PrettyGood = new sound("sounds/chain4PrettyGood.mp3");
-    chain5PewPew = new sound("sounds/chain5Pew.mp3");
+    chain5Pew = new sound("sounds/chain5Pew.mp3");
 
 }
 
@@ -450,10 +451,10 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
 
             gridX.color = colorX;
             gridY.color = colorY;
-            drawStone(coordXx, coordXy, coordX.x--, coordX.y);
-            drawStone(coordYx, coordYy,coordY.x++, coordY.y);
+            drawStone(coordYx, coordYy, coordX.x--, coordX.y);
+            drawStone(coordXx, coordXy,coordY.x++, coordY.y);
 
-        }, 5, 50);
+        }, 0, 50);
 
     }
 
@@ -468,10 +469,10 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
 
             gridX.color = colorX;
             gridY.color = colorY;
-            drawStone(coordXx, coordXy, coordX.x++, coordX.y);
-            drawStone(coordYx, coordYy,coordY.x--, coordY.y);
+            drawStone(coordYx, coordYy, coordX.x++, coordX.y);
+            drawStone(coordXx, coordXy,coordY.x--, coordY.y);
 
-        }, 5, 50);
+        }, 0, 50);
 
     }
 
@@ -489,7 +490,7 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
             drawStone(coordYx, coordYy, coordX.x, coordX.y--);
             drawStone(coordXx, coordXy,coordY.x, coordY.y++);
 
-        }, 5, 50);
+        }, 0, 50);
 
     }
 
@@ -507,7 +508,7 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
             drawStone(coordYx, coordYy, coordX.x, coordX.y++);
             drawStone(coordXx, coordXy,coordY.x, coordY.y--);
 
-        }, 5, 50);
+        }, 0, 50);
 
     }
 
@@ -523,6 +524,10 @@ function draw() {
     spawn();
     playGround();
 
+    if (endGame){
+        noLoop();
+    }
+
     if (score >= target && victory){
         audio.pause();
         epicVictoryRoyal.play();
@@ -530,7 +535,7 @@ function draw() {
         spawn();
         score = 20000;
         victory = false;
-        noLoop();
+        endGame = true;
     }
 
     if (moves === 0 && score < target && failure) {
@@ -539,7 +544,7 @@ function draw() {
         spawn();
         video();
         failure = false;
-        noLoop();
+        endGame = true;
     }
 
     if (mouseIsPressed){
@@ -573,7 +578,7 @@ function draw() {
                 grid[oldX][oldY].selected = false;
                 grid[newX][newY].selected = false;
                 swap(grid[oldX][oldY], grid[newX][newY]);
-                animation(grid[oldX][oldY], oldX, oldY,grid[newX][newY], newX, newY);
+
 
                 moves--;
 
@@ -590,6 +595,8 @@ function draw() {
                 if (!foo){
                     swap(grid[oldX][oldY], grid[newX][newY]);
                     moves++;
+                }else{
+                    animation(grid[oldX][oldY], oldX, oldY,grid[newX][newY], newX, newY);
                 }
 
             }else{
